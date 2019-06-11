@@ -40,7 +40,7 @@ typedef struct esl_gencode_workstate_s {
   int     is_revcomp; // TRUE|FALSE: TRUE if we're doing reverse complement strand
   int     orfcount;   // >=0:   How many ORFs we've processed so far
 
-  ESL_SQ_BLOCK  *orf_block; // block of sequences to which to write ORFs
+  ESL_SQ_BLOCK  *orf_block; // sequences block to hold ORFs
 
   /* one-time configuration information (from options) */
   int     do_watson;         // TRUE|FALSE:  TRUE if we translate the top strand
