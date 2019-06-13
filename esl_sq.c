@@ -561,6 +561,38 @@ esl_sq_CreateBlock(int count)
   return sq_createblock(count, FALSE);
 }
 
+/* Function:  esl_sq_ReuseBlock()
+ * Synopsis:  Prepare a sequence block to be reused.
+ *
+ * Purpose:   Given a ESL_SQ_BLOCK object <block> already in use,
+ *            reinitialize all its data. This allows a block to be
+ *            reused without a lot of wasted allocation/free cycling.
+ *
+ * Returns:
+ *
+ * Throws:
+ */
+void
+esl_sq_ReuseBlock(ESL_SQ_BLOCK *block)
+{
+    int i;
+
+    if (block == NULL) return;
+
+    for (i = 0; i < block->count; ++i)
+    {
+        esl_sq_Reuse(block->list + i);
+    }
+
+    block->count = 0;
+    block->first_seqidx = -1;
+    block->complete = TRUE;
+
+
+    return;
+}
+
+
 /* Function:  esl_sq_DestroyBlock()
  * Synopsis:  Frees an <ESL_SQ_BLOCK>.
  * Incept:    

@@ -187,6 +187,7 @@ extern int     esl_sq_GetFromMSA  (const ESL_MSA *msa, int which, ESL_SQ *sq);
 extern int     esl_sq_FetchFromMSA(const ESL_MSA *msa, int which, ESL_SQ **ret_sq);
 
 extern ESL_SQ_BLOCK *esl_sq_CreateBlock(int count);
+extern void esl_sq_ReuseBlock(ESL_SQ_BLOCK *block);
 extern int esl_sq_BlockGrowTo(ESL_SQ_BLOCK *sqblock, int newsize, int do_digital, const ESL_ALPHABET *abc);
 extern ESL_SQ_BLOCK *esl_sq_CreateDigitalBlock(int count, const ESL_ALPHABET *abc);
 extern void          esl_sq_DestroyBlock(ESL_SQ_BLOCK *sqBlock);
