@@ -90,6 +90,8 @@ typedef struct {
   ESL_DSQ *dsq;            /* digitized sequence [1..n], or NULL if text       */
   char    *ss;             /* optional sec structure [0..n-1], [1..n], or NULL */
   int64_t  n;              /* length of seq (or dsq) and ss                    */
+  int64_t  prev_n;         /* total number of residues in all previously captured seque ces; used for naming orfs in translated search only */
+
   /*::cexcerpt::sq_sq::end::*/
 
   /* Coordinate info for:                                       seq       subseq     window     info */
