@@ -750,7 +750,6 @@ esl_gencode_WorkstateCreate(ESL_GETOPTS *go, ESL_GENCODE *gcode)
   int    status;
 
   ESL_ALLOC(wrk, sizeof(ESL_GENCODE_WORKSTATE));
-  for (f = 0; f < 3; f++) wrk->psq[f] = NULL;
 
   for (f = 0; f < 3; f++)
     {
