@@ -77,7 +77,6 @@ RANLIB   = @RANLIB@
 INSTALL  = @INSTALL@
 
 
-
 # beautification magic, stolen from git
 #
 QUIET_SUBDIR0 = +${MAKE} -C #space separator after -c
@@ -100,6 +99,7 @@ HDRS = 	easel.h\
 	esl_alphabet.h\
 	esl_arr2.h\
 	esl_arr3.h\
+	esl_bitfield.h\
 	esl_avx.h\
 	esl_avx512.h\
 	esl_buffer.h\
@@ -149,6 +149,7 @@ HDRS = 	easel.h\
 	esl_quicksort.h\
 	esl_paml.h\
 	esl_random.h\
+	esl_rand64.h\
 	esl_randomseq.h\
 	esl_ratematrix.h\
 	esl_recorder.h\
@@ -169,6 +170,7 @@ HDRS = 	easel.h\
 	esl_subcmd.h\
 	esl_threads.h\
 	esl_tree.h\
+	esl_varint.h\
 	esl_vectorops.h\
 	esl_vmx.h\
 	esl_weibull.h\
@@ -180,6 +182,7 @@ OBJS =	easel.o\
 	esl_alphabet.o\
 	esl_arr2.o\
 	esl_arr3.o\
+	esl_bitfield.o\
 	esl_buffer.o\
 	esl_cluster.o\
 	esl_composition.o\
@@ -226,6 +229,7 @@ OBJS =	easel.o\
 	esl_paml.o\
 	esl_quicksort.o\
 	esl_random.o\
+	esl_rand64.o\
 	esl_randomseq.o\
 	esl_ratematrix.o\
 	esl_recorder.o\
@@ -245,6 +249,7 @@ OBJS =	easel.o\
 	esl_subcmd.o\
 	esl_threads.o\
 	esl_tree.o\
+	esl_varint.o\
 	esl_vectorops.o\
 	esl_weibull.o\
 	esl_workqueue.o\
@@ -274,6 +279,7 @@ UTESTS =\
 	easel_utest\
 	esl_alloc_utest\
 	esl_alphabet_utest\
+	esl_bitfield_utest\
 	esl_buffer_utest\
 	esl_cluster_utest\
 	esl_cpu_utest\
@@ -314,6 +320,7 @@ UTESTS =\
 	esl_normal_utest\
 	esl_quicksort_utest\
 	esl_random_utest\
+	esl_rand64_utest\
 	esl_randomseq_utest\
 	esl_ratematrix_utest\
 	esl_red_black_utest\
@@ -328,6 +335,7 @@ UTESTS =\
 	esl_stats_utest\
 	esl_stretchexp_utest\
 	esl_tree_utest\
+	esl_varint_utest\
 	esl_vectorops_utest\
 	esl_weibull_utest\
 	esl_wuss_utest
@@ -381,7 +389,8 @@ BENCHMARKS =\
 	esl_buffer_benchmark  \
 	esl_keyhash_benchmark \
 	esl_mem_benchmark     \
-	esl_random_benchmark
+	esl_random_benchmark  \
+	esl_rand64_benchmark
 
 SSE_BENCHMARKS     = esl_sse_benchmark
 AVX_BENCHMARKS     = esl_avx_benchmark
@@ -460,6 +469,7 @@ EXAMPLES = \
         esl_msaweight_example\
         esl_normal_example\
         esl_random_example\
+        esl_rand64_example\
 	esl_regexp_example\
 	esl_regexp_example2\
 	esl_regexp_example3\
@@ -482,6 +492,7 @@ EXAMPLES = \
         esl_threads_example2\
         esl_tree_example\
         esl_tree_example2\
+	esl_varint_example\
         esl_vectorops_example\
         esl_weibull_example\
         esl_workqueue_example
@@ -520,11 +531,13 @@ tests:  ${ALL_UTESTS}
 	${QUIET_SUBDIR0}miniapps ${QUIET_SUBDIR1} tests
 
 check:  ${ALL_UTESTS} .FORCE
+	@command -v python3 >/dev/null 2>&1 || { echo >&2 "python3 is required for 'make check', but is not in your PATH. Aborting."; exit 1; }
 	${QUIET_SUBDIR0}miniapps  ${QUIET_SUBDIR1} check
 	${QUIET_SUBDIR0}testsuite ${QUIET_SUBDIR1} check
 
 # `make dcheck`: run developer testsuite, save output in testsuite/dcheck.report
 dcheck:
+	@command -v python3 >/dev/null 2>&1 || { echo >&2 "python3 is required for 'make dcheck', but is not in your PATH. Aborting."; exit 1; }
 	${QUIET_SUBDIR0}testsuite   ${QUIET_SUBDIR1} dcheck
 
 pdf:
