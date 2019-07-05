@@ -404,6 +404,13 @@ else
 fi
 
 
+# We need python 3 for 'make check' and some dev tools. sqc checks
+# too, as does the Makefile, but we also check in ./configure, so we
+# don't recommend 'make check' to the user if they can't use it.
+# 
+AC_CHECK_PROG(HAVE_PYTHON3, python3, yes)
+
+
 ################################################################
 # 6. Checks for libraries
 #################################################################
@@ -614,8 +621,15 @@ Vector implementations enabled:
            avx: $enable_avx
         avx512: $enable_avx512
           neon: $enable_neon
-           vmx: $enable_vmx
+           vmx: $enable_vmx"
 
-Do 'make' to build Easel.
-Then (optionally) do 'make check' to run self-tests.
-"
+
+if test x"$HAVE_PYTHON3" = x"yes"; then echo "
+Now do 'make' to build Easel, and optionally:
+       'make check' to run self-tests.";
+else echo "
+(No python3 found, so 'make check' is disabled.)
+
+Now do 'make' to build Easel.";
+fi
+

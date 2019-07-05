@@ -18,11 +18,8 @@
 #include "esl_matrixops.h"
 #include "esl_vectorops.h"
 
-/* Function:  esl_mat_DCreate()
- * Synopsis:  Create an MxN matrix of doubles.
- * 
- * Note:      esl_mat_FCreate(), esl_mat_ICreate() do
- *            the same for float and integer matrices.
+/* Function:  esl_mat_{DFIC}Create()
+ * Synopsis:  Create an MxN matrix of doubles (floats, ints, chars).
  */
 double **
 esl_mat_DCreate(int M, int N)
@@ -91,9 +88,72 @@ esl_mat_ICreate(int M, int N)
   esl_mat_IDestroy(A);
   return NULL;
 }
+char **
+esl_mat_CCreate(int M, int N)
+{
+  char **A = NULL;
+  int    i;
+  int    status;
+
+  ESL_DASSERT1(( M > 0 ));
+  ESL_DASSERT1(( N > 0 ));
+
+  ESL_ALLOC(A, sizeof(char *) * M);
+  A[0] = NULL;
+
+  ESL_ALLOC(A[0], sizeof(char) * M * N);
+  for (i = 1; i < M; i++)
+    A[i] = A[0] + i * N;
+
+  return A;
+
+ ERROR:
+  esl_mat_CDestroy(A);
+  return NULL;
+}
 
 
-/* Function:  esl_mat_{DFI}GrowTo()
+/* Function:  esl_mat_{DFI}Clone()
+ * Synopsis:  Duplicate a 2D matrix
+ * Incept:    SRE, Fri 05 Apr 2019
+ *
+ * Purpose:   Duplicate a matrix, into freshly allocated space.
+ *            Return a ptr to the duplicate.
+ *
+ * Throws:    <NULL> on allocation failure.
+ */
+double **
+esl_mat_DClone(double **A, int M, int N)
+{
+  double **new;
+
+  if ((new = esl_mat_DCreate(M, N)) == NULL) return NULL;
+  esl_mat_DCopy(A, M, N, new);
+  return new;
+}
+float **
+esl_mat_FClone(float **A, int M, int N)
+{
+  float **new;
+
+  if ((new = esl_mat_FCreate(M, N)) == NULL) return NULL;
+  esl_mat_FCopy(A, M, N, new);
+  return new;
+}
+int **
+esl_mat_IClone(int **A, int M, int N)
+{
+  int **new;
+
+  if ((new = esl_mat_ICreate(M, N)) == NULL) return NULL;
+  esl_mat_ICopy(A, M, N, new);
+  return new;
+}
+
+
+
+
+/* Function:  esl_mat_{DFIC}GrowTo()
  * Synopsis:  Increase the allocation for a matrix
  * Incept:    SRE, Fri 06 Jul 2018 [World Cup, France v. Uruguay]
  *
@@ -133,6 +193,101 @@ esl_mat_DGrowTo(double ***ret_A, int M, int N)
   *ret_A = A;  // 1st realloc could succeed, moving A, before 2nd realloc fails.
   return status;
 }
+int
+esl_mat_FGrowTo(float ***ret_A, int M, int N)
+{
+  float **A = *ret_A;
+  int     i;
+  int     status;
+
+  ESL_REALLOC(A[0], sizeof(float)   * (M*N));
+  ESL_REALLOC(A,    sizeof(float *) * M);    
+  for (i = 1; i < M; i++) A[i] = A[0] + i * N;
+  *ret_A = A;
+  return eslOK;
+
+ ERROR:
+  *ret_A = A; 
+  return status;
+}
+int
+esl_mat_IGrowTo(int ***ret_A, int M, int N)
+{
+  int **A = *ret_A;
+  int   i;
+  int   status;
+
+  ESL_REALLOC(A[0], sizeof(int) * (M*N)); 
+  ESL_REALLOC(A,  sizeof(int *) * M);    
+  for (i = 1; i < M; i++) A[i] = A[0] + i * N;
+  *ret_A = A;
+  return eslOK;
+
+ ERROR:
+  *ret_A = A;
+  return status;
+}
+int
+esl_mat_CGrowTo(char ***ret_A, int M, int N)
+{
+  char **A = *ret_A;
+  int    i;
+  int    status;
+
+  ESL_REALLOC(A[0], sizeof(char) * (M*N));  
+  ESL_REALLOC(A,  sizeof(char *) * M);      
+  for (i = 1; i < M; i++) A[i] = A[0] + i * N;
+  *ret_A = A;
+  return eslOK;
+
+ ERROR:
+  *ret_A = A; 
+  return status;
+}
+
+
+
+
+
+
+
+/* Function:  esl_mat_{DFIC}Sizeof()
+ * Synopsis:  Returns size of a matrix, in bytes.
+ * 
+ * Note:      Doesn't need a particular matrix to calculate this;
+ */
+size_t
+esl_mat_DSizeof(int M, int N)
+{
+  size_t n = 0;
+  n += sizeof(double)   * M * N;
+  n += sizeof(double *) * M;
+  return n;
+}
+size_t
+esl_mat_FSizeof(int M, int N)
+{
+  size_t n = 0;
+  n += sizeof(float)   * M * N;
+  n += sizeof(float *) * M;
+  return n;
+}
+size_t
+esl_mat_ISizeof(int M, int N)
+{
+  size_t n = 0;
+  n += sizeof(int)   * M * N;
+  n += sizeof(int *) * M;
+  return n;
+}
+size_t
+esl_mat_CSizeof(int M, int N)
+{
+  size_t n = 0;
+  n += sizeof(char)   * M * N;
+  n += sizeof(char *) * M;
+  return n;
+}
 
 
 /* Function:  esl_mat_{DFI}Set()
@@ -153,6 +308,28 @@ esl_mat_ISet(int **A, int M, int N, int value)
 {
   esl_vec_ISet(A[0], M*N, value);
 }
+
+
+/* Function:  esl_mat_{DFI}Scale()
+ * Synopsis:  Scale all values in a matrix by one scalar multiplier
+ * Incept:    SRE, Wed 03 Apr 2019
+ */
+void
+esl_mat_DScale(double **A, int M, int N, double x)
+{
+  esl_vec_DScale(A[0], M*N, x);
+}
+void
+esl_mat_FScale(float **A, int M, int N, float x)
+{
+  esl_vec_FScale(A[0], M*N, x);
+}
+void
+esl_mat_IScale(int **A, int M, int N, int x)
+{
+  esl_vec_IScale(A[0], M*N, x);
+}
+
 
 
 /* Function:  esl_mat_{DFI}Copy()
@@ -224,7 +401,7 @@ esl_mat_ICompare(int **A, int **B, int M, int N)
 }
 
 
-/* Function:  esl_mat_{DFI}Destroy()
+/* Function:  esl_mat_{DFIC}Destroy()
  * Synopsis:  Free a matrix.
  * Incept:    SRE, Tue 26 Jun 2018
  *
@@ -250,6 +427,14 @@ esl_mat_FDestroy(float **A)
 }
 void
 esl_mat_IDestroy(int **A)
+{
+  if (A) {
+    free(A[0]);
+    free(A);
+  }
+}
+void
+esl_mat_CDestroy(char **A)
 {
   if (A) {
     free(A[0]);
@@ -312,12 +497,14 @@ utest_idiocy(ESL_RANDOMNESS *rng)
   char     msg[]   = "esl_matrixops utest_idiocy() test failed";
   int      m       = 1 + esl_rnd_Roll(rng, 10); // 1..10
   int      n       = 1 + esl_rnd_Roll(rng, 10); // 1..10
-  int    **A       = esl_mat_ICreate(m, n);
   double **D       = esl_mat_DCreate(m, n);
   float  **F       = esl_mat_FCreate(m, n);
-  int    **A2      = esl_mat_ICreate(m, n);
+  int    **A       = esl_mat_ICreate(m, n);
+  char   **S       = esl_mat_CCreate(m, n);
   double **D2      = esl_mat_DCreate(m, n);
   float  **F2      = esl_mat_FCreate(m, n);
+  int    **A2      = esl_mat_ICreate(m, n);
+  char   **S2      = esl_mat_CCreate(m, n);
   int      testval = 42;
 
   esl_mat_DSet(D, m, n, (double) testval);
@@ -339,6 +526,7 @@ utest_idiocy(ESL_RANDOMNESS *rng)
   esl_mat_DDestroy(D); esl_mat_DDestroy(D2);
   esl_mat_FDestroy(F); esl_mat_FDestroy(F2);
   esl_mat_IDestroy(A); esl_mat_IDestroy(A2);
+  esl_mat_CDestroy(S); esl_mat_CDestroy(S2);
 }
 
 static void

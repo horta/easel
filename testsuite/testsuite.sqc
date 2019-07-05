@@ -11,6 +11,7 @@
 # arr3
 1 exercise avx-utest          @esl_avx_utest@
 1 exercise avx512-utest       @esl_avx512_utest@
+1 exercise bitfield-utest     @esl_bitfield_utest@
 1 exercise buffer-utest       @esl_buffer_utest@
 1 exercise cluster-utest      @esl_cluster_utest@
 # composition
@@ -58,6 +59,7 @@
 # paml
 1 exercise quicksort-utest    @esl_quicksort_utest@
 1 exercise random-utest       @esl_random_utest@
+1 exercise rand64-utest       @esl_rand64_utest@
 1 exercise randomseq-utest    @esl_randomseq_utest@
 1 exercise ratematrix-utest   @esl_ratematrix_utest@
 1 exercise recorder-utest     @esl_recorder_utest@
@@ -76,6 +78,7 @@
 # swat
 # threads
 1 exercise tree-utest         @esl_tree_utest@
+1 exercise varint-utest       @esl_varint_utest@
 1 exercise vectorops-utest    @esl_vectorops_utest@
 1 exercise vmx-utest          @esl_vmx_utest@
 1 exercise weibull-utest      @esl_weibull_utest@
@@ -125,6 +128,7 @@
 # arr3
 3 valgrind avx-utest          @esl_avx_utest@
 3 valgrind avx512-utest       @esl_avx512_utest@
+3 valgrind bitfield-utest     @esl_bitfield_utest@
 3 valgrind buffer-utest       @esl_buffer_utest@
 #    (buffer_utest fails for valgrind <=3.6.1, known valgrind bug #258294 on OS/X; I use valgrind >=3.10.0)
 3 valgrind cluster-utest      @esl_cluster_utest@
@@ -173,6 +177,7 @@
 # paml
 3 valgrind quicksort-utest    @esl_quicksort_utest@
 3 valgrind random-utest       @esl_random_utest@
+3 valgrind rand64-utest       @esl_rand64_utest@
 3 valgrind randomseq-utest    @esl_randomseq_utest@
 3 valgrind ratematrix-utest   @esl_ratematrix_utest@
 3 valgrind recorder-utest     @esl_recorder_utest@
@@ -191,6 +196,7 @@
 # swat
 # threads
 3 valgrind tree-utest         @esl_tree_utest@
+3 valgrind varint-utest       @esl_varint_utest@
 3 valgrind vectorops-utest    @esl_vectorops_utest@
 3 valgrind vmx-utest          @esl_vmx_utest@
 3 valgrind weibull-utest      @esl_weibull_utest@
