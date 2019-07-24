@@ -33,6 +33,7 @@ static ESL_ALPHABET *create_dna(void);
 static ESL_ALPHABET *create_amino(void);
 static ESL_ALPHABET *create_coins(void);
 static ESL_ALPHABET *create_dice(void);
+static ESL_ALPHABET *create_codon(void);
 
 static int set_complementarity(ESL_ALPHABET *a);
 
@@ -60,6 +61,7 @@ esl_alphabet_Create(int type)
   case eslAMINO:  a = create_amino(); break;
   case eslCOINS:  a = create_coins(); break;
   case eslDICE:   a = create_dice();  break;
+  case eslCODON:  a = create_codon();  break;
   default:        esl_fatal("bad alphabet type: unrecognized");  // violation: must be a code error, not user.
   }
   return a;
@@ -340,6 +342,25 @@ create_dice(void)
   /* There are no degeneracies in the dice alphabet. */
   
   return a;
+}
+
+ESL_ALPHABET *
+create_codon(void)
+{
+  static const char a[]
+      = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ<>-?*~";
+
+  ESL_ALPHABET *abc = esl_alphabet_CreateCustom(a, 64, 68);
+  if (!abc) return NULL;
+
+  abc->type = eslCODON;
+
+  /* Add desired synonyms in the input map.
+   */
+  esl_alphabet_SetEquiv(abc, '_', '-'); /* allow _ as a gap too */
+  esl_alphabet_SetEquiv(abc, '.', '-'); /* allow . as a gap too */
+
+  return abc;
 }
   
 /* set_complementarity()
@@ -1666,6 +1687,7 @@ esl_abc_EncodeType(char *type)
   else if (strcasecmp(type, "coins") == 0) return eslCOINS;
   else if (strcasecmp(type, "dice")  == 0) return eslDICE;
   else if (strcasecmp(type, "custom")== 0) return eslNONSTANDARD;
+  else if (strcasecmp(type, "codon") == 0) return eslCODON;
   else                                     return eslUNKNOWN;
 }
 
@@ -1686,6 +1708,7 @@ esl_abc_EncodeTypeMem(char *type, int n)
   else if (esl_memstrcmp_case(type, n, "coins"))  return eslCOINS;
   else if (esl_memstrcmp_case(type, n, "dice"))   return eslDICE;
   else if (esl_memstrcmp_case(type, n, "custom")) return eslNONSTANDARD;
+  else if (esl_memstrcmp_case(type, n, "codon"))  return eslCODON;
   else                                            return eslUNKNOWN;
 }
 
@@ -1708,6 +1731,7 @@ esl_abc_DecodeType(int type)
   case eslCOINS:       return "coins";
   case eslDICE:        return "dice";
   case eslNONSTANDARD: return "custom";
+  case eslCODON:       return "codon";
   default:             break;
   }
   esl_exception(eslEINVAL, FALSE, __FILE__, __LINE__, "no such alphabet type code %d\n", type);

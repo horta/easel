@@ -17,6 +17,7 @@
 #define eslCOINS       4	/* for toy examples      */
 #define eslDICE        5	/* also for toy examples */
 #define eslNONSTANDARD 6
+#define eslCODON       7
 /* ... if you add here, change esl_abc_ValidateType() too. */
 
 

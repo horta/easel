@@ -72,6 +72,7 @@ extern int   esl_gencode_GetTranslation(const ESL_GENCODE *gcode, ESL_DSQ *dsqp)
 extern int   esl_gencode_IsInitiator   (const ESL_GENCODE *gcode, ESL_DSQ *dsqp);
 
 /* Debugging/development utilities */
+extern int   esl_gencode_Digicodon(const ESL_GENCODE *gcode, const char *codon);
 extern char *esl_gencode_DecodeDigicodon(const ESL_GENCODE *gcode, int digicodon, char *codon);
 extern int   esl_gencode_DumpAltCodeTable(FILE *ofp);
 extern int   esl_gencode_Compare(const ESL_GENCODE *gc1, const ESL_GENCODE *gc2, int metadata_too);

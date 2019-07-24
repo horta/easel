@@ -945,6 +945,18 @@ esl_gencode_ProcessEnd(ESL_GENCODE_WORKSTATE *wrk, ESL_SQ *sq)
  * 7. Debugging/development utilities
  *****************************************************************/ 
 
+int
+esl_gencode_Digicodon(const ESL_GENCODE *gcode, const char *codon)
+{
+  char tmp[4];
+  for (int i = 0; i < 64; ++i) {
+    if (strncmp(codon, esl_gencode_DecodeDigicodon(gcode, i, tmp), 3) == 0)
+      return i;
+  }
+  return -1;
+}
+
+
 /* Function:  esl_gencode_DecodeDigicodon()
  * Synopsis:  Convert digital codon code 0..63 to a text string
  *
